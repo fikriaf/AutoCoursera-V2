@@ -52,29 +52,29 @@ while True:
         try:
             cookies = pickle.load(open("cookies.pkl", "rb"))
             for cookie in cookies:
-                driver.add_cookie(cookie)
+                # Tambahkan atribut 'secure' jika SameSite=None
+                if cookie.get('sameSite') == 'None' and not cookie.get('secure'):
+                    cookie['secure'] = True
+                try:
+                    driver.add_cookie(cookie)
+                except Exception as e:
+                    print(f"Gagal menambahkan cookie: {cookie.get('name')} - {e}")
         except:
-            pass
+            print("[SILAKAN LOGIN TERLEBIH DAHULU]")
+
+            indikasi = input("Sudah login [y/n]? ")
+            
+            if indikasi == "n":
+                print("[EXIT]")
+            else:
+                print("[Menyimpan Cookie...]")
+                pickle.dump(driver.get_cookies(), open("cookies.pkl", "wb"))
+                time.sleep(1)
+                print("[Memuat ulang webdriver...]")
         
         driver.refresh()
         
-        try:
-            WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.ID, "cds-react-aria-2")))
-            driver.find_element(By.ID, "cds-react-aria-2").send_keys(email)
-            WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.ID, "cds-react-aria-3")))
-            driver.find_element(By.ID, "cds-react-aria-3").send_keys(password)
-            print("[SILAKAN LOGIN TERLEBIH DAHULU]")
-        except:
-            print("[Refresh Webdriver...]")
-            pass
         
-        WebDriverWait(driver, 1000).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "[data-e2e='page-nav-link-my_learning']")))
-        indikasi = driver.find_element(By.CSS_SELECTOR, "[data-e2e='page-nav-link-my_learning']")
-        if indikasi:
-            print("[Menyimpan Cookie...]")
-            pickle.dump(driver.get_cookies(), open("cookies.pkl", "wb"))
-            time.sleep(1)
-        print("[Memuat ulang webdriver...]")
     
     if first:
         login()
@@ -86,7 +86,14 @@ while True:
         print("[Memuat Cookie...]")
         cookies = pickle.load(open("cookies.pkl", "rb"))
         for cookie in cookies:
-            driver.add_cookie(cookie)
+            # Tambahkan atribut 'secure' jika SameSite=None
+            if cookie.get('sameSite') == 'None' and not cookie.get('secure'):
+                cookie['secure'] = True
+            try:
+                driver.add_cookie(cookie)
+            except Exception as e:
+                print(f"Gagal menambahkan cookie: {cookie.get('name')} - {e}")
+
         driver.refresh()
         
         try:
@@ -178,22 +185,22 @@ while True:
                         )
                         video = driver.find_element(By.TAG_NAME, "video")
                         if video:
-                            pyautogui.click(1000, 500)
+                            pyautogui.click(1000, 480)
                             time.sleep(2)
-                            pyautogui.click(1285, 560)
+                            pyautogui.click(1800, 750)
                             time.sleep(1)
-                            pyautogui.click(1285, 560)
+                            pyautogui.click(1800, 750)
                             time.sleep(1.5)
-                            pyautogui.click(1000, 500)
+                            pyautogui.click(1000, 480)
                             time.sleep(1.5)
                             print("[Video Mark as Done]")
                             WebDriverWait(driver, 3).until(
                                 EC.visibility_of_element_located(
-                                    (By.XPATH, "//button[@aria-label='Next Item']")
+                                    (By.XPATH, "//button[@aria-label='Go to next item']")
                                 )
                             )
                             driver.find_element(
-                                By.XPATH, "//button[@aria-label='Next Item']"
+                                By.XPATH, "//button[@aria-label='Go to next item']"
                             ).click()
                             print("[Next]")
                             continue
@@ -217,11 +224,11 @@ while True:
                             print("[Reading Mark as Done]")
                             WebDriverWait(driver, 3).until(
                                 EC.visibility_of_element_located(
-                                    (By.XPATH, "//button[@aria-label='Next Item']")
+                                    (By.XPATH, "//button[@aria-label='Go to next item']")
                                 )
                             )
                             driver.find_element(
-                                By.XPATH, "//button[@aria-label='Next Item']"
+                                By.XPATH, "//button[@aria-label='Go to next item']"
                             ).click()
                             print("[Next]")
                             continue
@@ -231,11 +238,11 @@ while True:
                     try:
                         WebDriverWait(driver, 3).until(
                             EC.visibility_of_element_located(
-                                (By.XPATH, "//button[@aria-label='Next Item']")
+                                (By.XPATH, "//button[@aria-label='Go to next item']")
                             )
                         )
                         driver.find_element(
-                            By.XPATH, "//button[@aria-label='Next Item']"
+                            By.XPATH, "//button[@aria-label='Go to next item']"
                         ).click()
                         print("[Next]")
                     except Exception as e:

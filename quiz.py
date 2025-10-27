@@ -34,6 +34,7 @@ first = True
 modequiz = False
 target_nilai = 100
 
+
 while True:
     nilai = []
     inputLink = input("\nInput link course (Banyak link pisahkan dengan spasi): ")
@@ -55,7 +56,14 @@ while True:
         print("[Memuat Cookie...]")
         cookies = pickle.load(open("cookies.pkl", "rb"))
         for cookie in cookies:
-            driver.add_cookie(cookie)
+                # Tambahkan atribut 'secure' jika SameSite=None
+                if cookie.get('sameSite') == 'None' and not cookie.get('secure'):
+                    cookie['secure'] = True
+                try:
+                    driver.add_cookie(cookie)
+                except Exception as e:
+                    print(f"Gagal menambahkan cookie: {cookie.get('name')} - {e}")
+
                 
         print("[Memuat Course...]")
         course_index = index+1
@@ -110,7 +118,7 @@ while True:
                         if video:
                             WebDriverWait(driver, 2).until(
                                 EC.visibility_of_element_located(
-                                    (By.XPATH, "//button[@aria-label='Next Item']")
+                                    (By.XPATH, "//button[@aria-label='Go to next item']")
                                 )
                             ).click()
                             print("[Next]")
@@ -136,7 +144,7 @@ while True:
                             print("[Reading Mark as Done]")
                             WebDriverWait(driver, 2).until(
                                 EC.visibility_of_element_located(
-                                    (By.XPATH, "//button[@aria-label='Next Item']")
+                                    (By.XPATH, "//button[@aria-label='Go to next item']")
                                 )
                             ).click()
                             print("[Next]")
@@ -147,9 +155,9 @@ while True:
                     try:
                         linkquiz = driver.current_url
                         try:
-                            WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.CLASS_NAME, "css-6ecy9b")))
+                            WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CLASS_NAME, "css-6ecy9b")))
                             versilain = driver.find_element(By.CLASS_NAME, "css-6ecy9b").text
-                            WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.CLASS_NAME, "css-6ecy9b")))
+                            WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CLASS_NAME, "css-6ecy9b")))
                             versilain1 = driver.find_element(By.CLASS_NAME, "css-6ecy9b").text
                             if versilain == "Submit your assignment" or versilain1 == "Assignment details":
                                 try:
@@ -161,11 +169,11 @@ while True:
                                         if retake:
                                             WebDriverWait(driver, 2).until(
                                                 EC.visibility_of_element_located(
-                                                    (By.XPATH, "//button[@aria-label='Next Item']")
+                                                    (By.XPATH, "//button[@aria-label='Go to next item']")
                                                 )
                                             )
                                             driver.find_element(
-                                                By.XPATH, "//button[@aria-label='Next Item']"
+                                                By.XPATH, "//button[@aria-label='Go to next item']"
                                             ).click()
                                             print("[Attempt Mencapai Limit]")
                                             print("[Next]")
@@ -190,7 +198,14 @@ while True:
                                 # except:
                                 #     pass
                                 attemp_versilain = False
-                            
+                            # else:
+                            #     WebDriverWait(driver, 2).until(
+                            #         EC.visibility_of_element_located(
+                            #             (By.XPATH, "//button[@aria-label='Go to next item']")
+                            #         )
+                            #     ).click()
+                            #     print("[Next]")
+                            #     continue
                             # WebDriverWait(driver, 3).until(
                             #     EC.visibility_of_element_located((By.XPATH, '//h3[text()="Attempts"]'))
                             # )
@@ -198,22 +213,23 @@ while True:
                         except:
                             WebDriverWait(driver, 2).until(
                                 EC.visibility_of_element_located(
-                                    (By.XPATH, "//button[@aria-label='Next Item']")
+                                    (By.XPATH, "//button[@aria-label='Go to next item']")
                                 )
                             ).click()
                             print("[Next]")
                             continue
+                        
                         
                         try:
                             ready_attempt = driver.find_element(By.CLASS_NAME, "css-ra3hwj")
                             if "cds-button-disabled" in ready_attempt.get_attribute("class"):
                                 WebDriverWait(driver, 2).until(
                                     EC.visibility_of_element_located(
-                                        (By.XPATH, "//button[@aria-label='Next Item']")
+                                        (By.XPATH, "//button[@aria-label='Go to next item']")
                                     )
                                 )
                                 driver.find_element(
-                                    By.XPATH, "//button[@aria-label='Next Item']"
+                                    By.XPATH, "//button[@aria-label='Go to next item']"
                                 ).click()
                                 print("[Next]")
                                 continue
@@ -232,11 +248,11 @@ while True:
                                 try:
                                     WebDriverWait(driver, 2).until(
                                         EC.visibility_of_element_located(
-                                            (By.XPATH, "//button[@aria-label='Next Item']")
+                                            (By.XPATH, "//button[@aria-label='Go to next item']")
                                         )
                                     )
                                     driver.find_element(
-                                        By.XPATH, "//button[@aria-label='Next Item']"
+                                        By.XPATH, "//button[@aria-label='Go to next item']"
                                     ).click()
                                     print("[Next]")
                                     continue
@@ -271,8 +287,8 @@ while True:
                         except:
                             pass
                         try:
-                            WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.CLASS_NAME, "css-1wrxi0w")))
-                            driver.find_element(By.CLASS_NAME, "css-1wrxi0w").click()
+                            WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.CLASS_NAME, "css-brj4hj")))
+                            driver.find_element(By.CLASS_NAME, "css-brj4hj").click()
                         except:
                             pass
                         try:
@@ -285,10 +301,20 @@ while True:
                         # if attemp_versilain:
                         #     classnya = "rc-FormPartsQuestion"
                         # else:
-                        classnya = "css-1i6fgnf"
+                        classnya = "css-1erl2aq"
                             
-                        soalquiz = driver.find_elements(By.CLASS_NAME, classnya)
+                        soalquiz_raw = driver.find_elements(By.CLASS_NAME, classnya)
+                        # Filter out elements with 'textBlock' class
+                        soalquiz = [elem for elem in soalquiz_raw if 'textBlock' not in elem.get_attribute('class')]
                         print(f"Jumlah Soal Quiz: {len(soalquiz)}")
+                        if len(soalquiz) == 0:
+                            WebDriverWait(driver, 2).until(
+                                EC.visibility_of_element_located(
+                                    (By.XPATH, "//button[@aria-label='Go to next item']")
+                                )
+                            ).click()
+                            print("[Next]")
+                            continue
                         print("[Mulai Mengerjakan Quiz...]")
                         preprompt = []
                         jawaban = []
@@ -300,7 +326,11 @@ while True:
                                     WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.XPATH, "//*[contains(@id, 'text-area-') and contains(@id, '-input')]")))
                                     soal_input_text = driver.find_element(By.XPATH, "//*[contains(@id, 'text-area-') and contains(@id, '-input')]")
                                 except:
-                                    soal_input_text = False
+                                    try:
+                                        WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.CLASS_NAME, "cds-input-input")))
+                                        soal_input_text = driver.find_element(By.CLASS_NAME, "cds-input-input")
+                                    except:
+                                        soal_input_text = False
                                 if len(soalquiz) == 1 and soal_input_text:
                                     soal = driver.find_element(By.CLASS_NAME, classnya).find_element(By.CLASS_NAME, "rc-CML").text
                                     mode_jawaban_textarea = True
@@ -315,7 +345,15 @@ while True:
                                         mode_jawaban_textarea = True
                                         print("[Mode Pertanyaan Isian]")
                                     except:
-                                        soal = x.find_element(By.CLASS_NAME, "rc-CML").text
+                                        try:
+                                            WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.CLASS_NAME, "cds-input-input")))
+                                            soal_input_text = driver.find_element(By.CLASS_NAME, "cds-input-input")
+                                            soal = x.find_element(By.CLASS_NAME, "rc-CML").text
+                                            soal_input_text.click()
+                                            mode_jawaban_textarea = True
+                                            print("[Mode Pertanyaan Isian - Input Text/Number]")
+                                        except:
+                                            soal = x.find_element(By.CLASS_NAME, "rc-CML").text
                                 
                             except Exception as e:
                                 print("errrrrrrrrrr", e)
@@ -351,7 +389,7 @@ while True:
                             if work_ai_2 <= 2:
                                 print("WRONG ANSWER: ",yngsalah)
                                 # prompt = f"I emphasize that you re-send all correct answers (only nomor and answer: 'no. answer', example: '1. Answer\n2. Answer\netc', DONT ANOTHER WORD, DONT ARRAY), YOU MUST CHOOSE ANOTHER OPTION FOR THE WRONG OPTION\n{preprompt}\nAnswer: {jawabane}\n{yngsalah}"
-                                prompt = f"You are tasked to re-send the correct answers in the format: 'no. answer', example: '1. Answer\n2. Answer\netc'. You must re-select the correct answer if the current one is wrong. Do not start with any word, do not send an array, and do not output any other words. Output only the answers in the format specified. Nothing else.\n{preprompt}\nAnswer: {jawabane}\nIncorrect: {yngsalah}\nSEND FORMAT 'No. Answer'"
+                                prompt = f"IMPORTANT: You MUST send ALL answers for ALL questions, not just the incorrect ones. Re-send the complete list of answers in the format: 'no. answer', example: '1. Answer\n2. Answer\n3. Answer\netc'. For incorrect answers, choose a different option. For correct answers, keep them the same. Do not add any extra text, words, or explanations. Only output the numbered answers.\n\nQuestions:\n{preprompt}\n\nPrevious Answers:\n{jawabane}\n\nIncorrect Answers (change these):\n{yngsalah}\n\nNow send ALL answers (1 through {len(preprompt)}) in format 'No. Answer':"
                                 print("[Mendapatkan Kunci Jawaban AI 1...]")
                                 jawaban = ai2.getanswer(prompt).split("\n")
                                 jawabane = []
@@ -362,7 +400,7 @@ while True:
                                     
                             elif work_ai_1 <= 2:
                                 print("WRONG ANSWER: ",yngsalah)
-                                prompt = f"You are tasked to re-send the correct answers in the format: 'no. answer', example: '1. Answer\n2. Answer\netc'. You must re-select the correct answer if the current one is wrong. Do not start with any word, do not send an array, and do not output any other words. Output only the answers in the format specified. Nothing else.\n{preprompt}\nAnswer: {jawabane}\nIncorrect: {yngsalah}\nSEND FORMAT 'No. Answer'"
+                                prompt = f"IMPORTANT: You MUST send ALL answers for ALL questions, not just the incorrect ones. Re-send the complete list of answers in the format: 'no. answer', example: '1. Answer\n2. Answer\n3. Answer\netc'. For incorrect answers, choose a different option. For correct answers, keep them the same. Do not add any extra text, words, or explanations. Only output the numbered answers.\n\nQuestions:\n{preprompt}\n\nPrevious Answers:\n{jawabane}\n\nIncorrect Answers (change these):\n{yngsalah}\n\nNow send ALL answers (1 through {len(preprompt)}) in format 'No. Answer':"
                                 print("[Mendapatkan Kunci Jawaban AI 2...]")
                                 jawaban = ai.getanswer(prompt).split("\n")
                                 jawabane = []
@@ -376,22 +414,46 @@ while True:
                         try:
                             for index, x in enumerate(soalquiz):
                                 if mode_jawaban_textarea:
+                                    # Extract answer for current question
+                                    try:
+                                        current_answer = re.search(r"\d+\.\s*(.*)", jawaban[index]).group(1).strip()
+                                    except:
+                                        current_answer = (jawaban[index] if index < len(jawaban) else "").strip()
+                                    
                                     if len(soalquiz) == 1:
-                                        print("[Send Keys Answer]") 
+                                        print(f"[Send Keys Answer: {current_answer}]") 
                                         try:
                                             WebDriverWait(driver, 3).until(EC.visibility_of_element_located((By.XPATH, "//*[contains(@id, 'text-area-') and contains(@id, '-input')]")))
                                             soal_input_textny = driver.find_element(By.XPATH, "//*[contains(@id, 'text-area-') and contains(@id, '-input')]")
                                             soal_input_textny.click()
                                             time.sleep(1)
-                                            soal_input_textny.send_keys(" ".join(jawaban))
-                                        except Exception as e:
-                                            print("ERRRRRRR", e)
+                                            soal_input_textny.send_keys(current_answer)
+                                        except:
+                                            try:
+                                                WebDriverWait(driver, 3).until(EC.visibility_of_element_located((By.CLASS_NAME, "cds-input-input")))
+                                                soal_input_textny = driver.find_element(By.CLASS_NAME, "cds-input-input")
+                                                soal_input_textny.click()
+                                                time.sleep(1)
+                                                soal_input_textny.send_keys(current_answer)
+                                            except Exception as e:
+                                                print("ERRRRRRR", e)
                                     else:
-                                        WebDriverWait(driver, 3).until(EC.visibility_of_element_located((By.TAG_NAME, "textarea")))
-                                        soal_input_textny = x.find_element(By.TAG_NAME, "textarea")
-                                        soal_input_textny.click()
-                                        time.sleep(1)
-                                        soal_input_textny.send_keys(" ".join(jawaban))
+                                        print(f"[Send Keys Answer No.{index+1}: {current_answer}]")
+                                        try:
+                                            WebDriverWait(driver, 3).until(EC.visibility_of_element_located((By.TAG_NAME, "textarea")))
+                                            soal_input_textny = x.find_element(By.TAG_NAME, "textarea")
+                                            soal_input_textny.click()
+                                            time.sleep(1)
+                                            soal_input_textny.send_keys(current_answer)
+                                        except:
+                                            try:
+                                                WebDriverWait(driver, 3).until(EC.visibility_of_element_located((By.CLASS_NAME, "cds-input-input")))
+                                                soal_input_textny = x.find_element(By.CLASS_NAME, "cds-input-input")
+                                                soal_input_textny.click()
+                                                time.sleep(1)
+                                                soal_input_textny.send_keys(current_answer)
+                                            except Exception as e:
+                                                print("ERRRRRRR", e)
 
                                 else:
                                     try:
@@ -489,7 +551,7 @@ while True:
                         print("[Klik Checkbox]")
                         time.sleep(1)
                         try:
-                            input_box = driver.find_element(By.CLASS_NAME, "css-opa93d")
+                            input_box = driver.find_element(By.CLASS_NAME, "css-ugcy57")
                             input_box.send_keys("Fikri")
                             time.sleep(1)
                         except:
@@ -510,16 +572,25 @@ while True:
                         except:
                             pass
                         print("[Klik Submit]")
+                        
                         time.sleep(2)
                         
+                        pyautogui.press('enter')
+            
                         try:
-                            WebDriverWait(driver, 3).until(EC.visibility_of_element_located((By.XPATH, "//span[@class='cds-button-label' and text()='Submit']")))
+                            WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, "//span[@class='cds-button-label' and text()='Submit']")))
                             driver.find_element(By.XPATH, "//span[@class='cds-button-label' and text()='Submit']").click()
                         except:
                             pass
                         try:
                             WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.CLASS_NAME, "css-1uh52ks")))
-                            driver.find_element(By.CLASS_NAME, "css-1uh52ks").click()
+                            driver.find_element(By.CLASS_NAME, "css-1jcd0q1").click()
+                        except:
+                            pass
+                        try:
+                            WebDriverWait(driver, 3).until(EC.visibility_of_element_located((By.XPATH, "//button[@data-testid='dialog-submit-button']")))
+                            driver.find_element(By.XPATH, "//button[@data-testid='dialog-submit-button']").click()
+                            print("[Klik Submit Modal Dialog]")
                         except:
                             pass
                         try:
@@ -540,7 +611,7 @@ while True:
                                 print(f"[QUIZ FINISHED] [{driver.current_url}]")
                                 print(f"[Your Grade: {grade}]")
                                 
-                                if int(float(grade.strip('%'))) < target_nilai and htungkuis < 10:
+                                if int(float(grade.strip('%'))) < target_nilai and htungkuis < 3:
                                     try:
                                         WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CLASS_NAME, classnya)))
                                         hasilquiz = driver.find_elements(By.CLASS_NAME, "classnya")
@@ -610,7 +681,7 @@ while True:
                             print(f"[QUIZ FINISHED] [{driver.current_url}]")
                             print(f"[Your Grade: {grade}]")
 
-                            if int(float(grade.strip('%'))) < target_nilai and htungkuis < 10:
+                            if int(float(grade.strip('%'))) < target_nilai and htungkuis < 3:
                                 try:
                                     WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CLASS_NAME, classnya)))
                                     hasilquiz = driver.find_elements(By.CLASS_NAME, "classnya")
@@ -674,29 +745,29 @@ while True:
                     
                     try:
                         WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, "//span[@class='cds-button-label' and text()='Next item']")))
-                        driver.find_element(By.XPATH, "//span[@class='cds-button-label' and text()='Next item']").click()
+                        driver.find_element(By.XPATH, "//span[@class='cds-button-label' and text()='Go to next item']").click()
                         print("[Next] ----------")
                     except:
                         pass
                     try:
                         WebDriverWait(driver, 3).until(
                             EC.visibility_of_element_located(
-                                (By.XPATH, "//button[@aria-label='Next Item']")
+                                (By.XPATH, "//button[@aria-label='Go to next item']")
                             )
                         )
                         driver.find_element(
-                            By.XPATH, "//button[@aria-label='Next Item']"
+                            By.XPATH, "//button[@aria-label=Go to next item']"
                         ).click()
                         print("[Next]")
                     except:
                         try:
                             WebDriverWait(driver, 3).until(
                                 EC.visibility_of_element_located(
-                                    (By.XPATH, "//button[@aria-label='Next Item']")
+                                    (By.XPATH, "//button[@aria-label='Go to next item']")
                                 )
                             )
                             driver.find_element(
-                                By.XPATH, "//button[@aria-label='Next Item']"
+                                By.XPATH, "//button[@aria-label='Go to next item']"
                             ).click()
                             print("[Next]")
                             continue
